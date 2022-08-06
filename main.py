@@ -62,7 +62,7 @@ def processMileage(message):
         msg = bot.send_message(message.chat.id, 'What is the distance that you are travelling?')
         bot.register_next_step_handler(msg, processDistance)
     except Exception as e:
-        bot.reply_to(message, 'oooops')
+        bot.reply_to(message, 'Oooops, something went wrong 😕')
    
 def processDistance(message):
     try:
@@ -74,7 +74,7 @@ def processDistance(message):
         bot.register_next_step_handler(msg, processCostPerLitre)
         
     except Exception as e:
-        bot.reply_to(message, 'oooops')
+        bot.reply_to(message, 'Oooops, something went wrong 😕')
 
 def processCostPerLitre(message):
     try:
@@ -94,7 +94,7 @@ def processCostPerLitre(message):
         bot.send_message(chat_id, 'You will have to fill up Rs. '+str(RoundedOffNumber)+' worth of fuel!\nHappy journey 😄')
                 
     except Exception as e:
-        bot.reply_to(message, 'oooops')
+        bot.reply_to(message, 'Oooops, something went wrong 😕')
 
 # Enable saving next step handlers to file "./.handlers-saves/step.save".
 # Delay=2 means that after any change in next step handlers (e.g. calling register_next_step_handler())
