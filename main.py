@@ -24,8 +24,6 @@ def commandStart(message):
 	 bot.send_message(message.chat.id, "Hi " + message.from_user.first_name+ " , I'm Fuel Calc Bot\n"
                                         "Say /calculate to start calculating!\n"
                                         "Say /help to see all the commands")
-
-
                 
 @bot.message_handler(commands=['info'])
 def commandInfo(message):    
@@ -43,11 +41,10 @@ def commandHelp(message):
 def commandStop(message):    
 	bot.send_message(message.chat.id, "Thanks for using me, Bye 😉")
 
-
 @bot.message_handler(commands=['calculate'])
-def commandCalculate(message):
+def commandCalculate(message):  
     msg = bot.send_message(message.chat.id, """\
-        Alright lets calculate the amount that you need to travel!\n
+        Alright lets calculate the amount that you need to travel!
 What is your vehicle's mileage?
 """)
     bot.register_next_step_handler(msg, processMileage)
@@ -57,29 +54,41 @@ def processMileage(message):
     try:
         chat_id = message.chat.id
         mileageTxt = message.text
+        if not mileageTxt.isdigit():
+            msg = bot.send_message(message.chat.id, 'Mileage should be a number. What is yout mileage?')
+            bot.register_next_step_handler(msg, processMileage)
+            return
         mileage = user(mileageTxt)
         user_dict[chat_id] = mileage
-        msg = bot.send_message(message.chat.id, 'What is the distance that you are travelling?')
+        msg = bot.send_message(message.chat.id, 'What is the distance that you are travelling (In KMs) ?')
         bot.register_next_step_handler(msg, processDistance)
     except Exception as e:
-        bot.reply_to(message, 'Oooops, something went wrong 😕')
+        bot.send_message(message.chat.id, 'Oooops, something went wrong 😕')
    
 def processDistance(message):
     try:
         chat_id = message.chat.id
         distanceTxt = message.text
+        if not distanceTxt.isdigit():
+            msg = bot.send_message(message.chat.id, 'Distance should be a number')
+            bot.register_next_step_handler(msg, processDistance)
+            return
         user = user_dict[chat_id]
         user.distance = distanceTxt
         msg = bot.send_message(message.chat.id, 'What is the cost of fuel per litre?')
         bot.register_next_step_handler(msg, processCostPerLitre)
         
     except Exception as e:
-        bot.reply_to(message, 'Oooops, something went wrong 😕')
+        bot.send_message(message.chat.id, 'Oooops, something went wrong 😕')
 
 def processCostPerLitre(message):
     try:
         chat_id = message.chat.id
         costPerLitTxt = message.text
+        if not costPerLitTxt.isdigit():
+            msg = bot.send_message(message.chat.id, 'Cost should be a number')
+            bot.register_next_step_handler(msg, processCostPerLitre)
+            return
         user = user_dict[chat_id]
         user.costPerLit = costPerLitTxt
 
@@ -94,8 +103,18 @@ def processCostPerLitre(message):
         bot.send_message(chat_id, 'You will have to fill up Rs. '+str(RoundedOffNumber)+' worth of fuel!\nHappy journey 😄')
                 
     except Exception as e:
-        bot.reply_to(message, 'Oooops, something went wrong 😕')
+        bot.send_message(message.chat.id, 'Oooops, something went wrong 😕')
 
+@bot.message_handler(func=lambda message: True)
+def echo_message(message):
+    print(message.text)
+    if message.text == "Hi" or "hi" or 'Hello' or "hello":
+        bot.send_message(message.chat.id, "Hi "+message.from_user.first_name+ " , say /start to get started")
+    elif message.text == "Thanks" or "Thenks" or "thanks" or "thenks":
+        bot.send_message(message.chat.id, "You are welcome 😄")
+    else: 
+        bot.send_message(message.chat.id, "I'm trying to understand you.")
+    
 # Enable saving next step handlers to file "./.handlers-saves/step.save".
 # Delay=2 means that after any change in next step handlers (e.g. calling register_next_step_handler())
 # saving will hapen after delay 2 seconds.
